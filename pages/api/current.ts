@@ -1,16 +1,23 @@
-import nc from 'next-connect';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { QueryStrings, getAPIUrl, getQueryStrings } from '@/lib/utils';
 import axios from 'axios';
+import { NextApiRequest, NextApiResponse } from 'next';
+import nc from 'next-connect';
 
-const BASE_URL = 'https://api.weatherapi.com/v1';
-
+const AVAILABLE_QUERIES = ['q', 'auto', 'aqi', 'alerts'];
 const handler = nc<NextApiRequest, NextApiResponse>();
 
 handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { q } = req.query;
-  const url = `${BASE_URL}/current.json?key=${process.env.WEATHER_API!}&q=${q}`;
+  const url = getAPIUrl(req);
 
-  const weatherRes = await axios.get(url);
+  const queries: string[] = getQueryStrings(
+    req.query as QueryStrings,
+    AVAILABLE_QUERIES
+  );
+
+  const weatherRes = await axios.get(
+    `${url}${queries.length > 0 ? '&' : ''}${queries.join('&')}`
+  );
+
   res.status(200).json(weatherRes.data);
 });
 
