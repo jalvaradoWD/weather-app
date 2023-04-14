@@ -9,10 +9,7 @@ const handler = nc<NextApiRequest, NextApiResponse>();
 handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const url = getAPIUrl(req);
 
-  const queries: string[] = getQueryStrings(
-    req.query as QueryStrings,
-    AVAILABLE_QUERIES
-  );
+  const queries = getQueryStrings(req.query as QueryStrings, AVAILABLE_QUERIES);
 
   const weatherRes = await axios.get(
     `${url}${queries.length > 0 ? '&' : ''}${queries.join('&')}`
