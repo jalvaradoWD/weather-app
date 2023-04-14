@@ -1,11 +1,10 @@
 import WeatherCurrent from '@/types/current';
 import axios from 'axios';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
-  const [weatherError, setWeatherError] = useState<GeolocationPositionError>();
 
   const getWeather = async () => {
     navigator.geolocation.getCurrentPosition(
@@ -16,16 +15,13 @@ export default function Home() {
         });
         setWeather(data);
       },
-      async (err) => {
-        console.error(err);
-        setWeatherError(err);
-      },
-      { enableHighAccuracy: true }
+      console.error,
+      { timeout: 5000 }
     );
   };
 
   return (
-    <main>
+    <main className="flex flex-col ">
       <h1 className="font-bold flex justify-center gap-2">
         <span>Raindrop</span>
         <Image
@@ -37,27 +33,10 @@ export default function Home() {
         />
       </h1>
 
-      <div className="weather">
-        {weather ? (
-          <>
-            <h2 className="text-2xl">{weather.location.name}</h2>
-            <div className="condition">
-              <Image
-                src={`https:${weather.current.condition.icon}`}
-                alt="Weather Icon"
-                width="50"
-                height="50"
-              />
-              <span className="text-2xl">{weather.current.temp_f}°F</span>
-            </div>
-            <p>Last Update: {weather.current.last_updated}</p>
-          </>
-        ) : null}
-      </div>
+      {weather ? <WeatherHeader weather={weather} /> : null}
 
       <button
-        type="button"
-        className="text-center p-2 bg-blue-600 text-white rounded-md"
+        className="w-11/12 bg-blue-500 p-2 rounded-md text-white text-center mx-auto"
         onClick={getWeather}
       >
         Get Weather
@@ -65,3 +44,26 @@ export default function Home() {
     </main>
   );
 }
+
+const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
+  return (
+    <div className="mx-auto w-11/12 grid grid-cols-2 grid-rows-3 bg-purple-800 text-white rounded-xl opacity-75 mb-4 border-4 border-blue-500 border-opacity-40">
+      <h2 className="text-2xl col-span-1 text-center self-center font-bold">
+        {weather.location.name}
+      </h2>
+      <Image
+        src={`https:${weather.current.condition.icon}`}
+        className="col-span-1 self-center place-self-end mr-4 w-[75px]"
+        alt="Weather Icon"
+        width="50"
+        height="50"
+      />
+      <span className="text-6xl col-span-2 text-center self-center">
+        {weather.current.temp_f}°F
+      </span>
+      <p className="col-span-2 text-center self-center">
+        {weather.current.condition.text}
+      </p>
+    </div>
+  );
+};
