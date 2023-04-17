@@ -1,13 +1,13 @@
 import WeatherCurrent from '@/types/current';
 import axios from 'axios';
 import Image from 'next/image';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
 
   const getWeather = async () => {
-    navigator.geolocation.getCurrentPosition(
+    return navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
         const { data } = await axios.get(`/api/current`, {

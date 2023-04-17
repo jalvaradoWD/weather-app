@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from 'axios';
 import { NextApiRequest } from 'next';
 export const BASE_URL = 'https://api.weatherapi.com/v1';
 
@@ -10,6 +11,10 @@ export interface QueryStrings {
   [key: string]: string | number | boolean;
 }
 
+/**
+ * @param something
+ * and a test
+ */
 export const getQueryStrings = (
   queries: QueryStrings,
   AVAILABLE_QUERIES: string[]
@@ -36,4 +41,19 @@ export const getAPIUrl = (req: NextApiRequest): string => {
   return `${BASE_URL}/${route.split('/')[2]}.json?key=${
     process.env.WEATHER_API
   }`;
+};
+
+export const GetWeatherData = async (
+  req: NextApiRequest,
+  AVAILABLE_QUERIES: string[]
+): Promise<AxiosResponse<any, any>> => {
+  const url = getAPIUrl(req);
+
+  const queries = getQueryStrings(req.query as QueryStrings, AVAILABLE_QUERIES);
+
+  const weatherResponse = await axios.get(
+    `${url}${queries.length > 0 ? '&' : ''}${queries.join('&')}`
+  );
+
+  return weatherResponse;
 };
