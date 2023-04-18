@@ -1,7 +1,7 @@
 import WeatherCurrent from '@/types/current';
 import axios from 'axios';
 import Image from 'next/image';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
@@ -16,9 +16,13 @@ export default function Home() {
         setWeather(data);
       },
       console.error,
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
   };
+
+  useEffect(() => {
+    getWeather();
+  }, []);
 
   return (
     <main className="flex flex-col ">
@@ -47,7 +51,7 @@ export default function Home() {
 
 const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
   return (
-    <div className="mx-auto w-11/12 grid grid-cols-2 grid-rows-3 bg-purple-800 text-white rounded-xl opacity-75 mb-4 border-4 border-blue-500 border-opacity-40">
+    <div className="mx-auto w-11/12 grid grid-cols-2 grid-rows-3 bg-pink-600 text-white rounded-xl opacity-75 mb-4 border-4 border-blue-500 border-opacity-40">
       <h2 className="text-2xl col-span-1 text-center self-center font-bold">
         {weather.location.name}
       </h2>
