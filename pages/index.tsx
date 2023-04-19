@@ -2,7 +2,8 @@ import WeatherCurrent from '@/types/current';
 import axios from 'axios';
 import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
-
+import { formatInTimeZone } from 'date-fns-tz';
+import { Bullet, ResponsiveBullet } from '@nivo/bullet';
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
 
@@ -10,8 +11,8 @@ export default function Home() {
     return navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        const { data } = await axios.get(`/api/current`, {
-          params: { q: `${latitude},${longitude}` },
+        const { data } = await axios.get<WeatherCurrent>(`/api/forecast`, {
+          params: { q: `${latitude},${longitude}`, days: 10 },
         });
         setWeather(data);
       },
@@ -39,29 +40,78 @@ export default function Home() {
 
       {weather ? <WeatherHeader weather={weather} /> : null}
 
-      <button
-        className="w-11/12 bg-blue-500 p-2 rounded-md text-white text-center mx-auto"
-        onClick={getWeather}
-      >
-        Get Weather
-      </button>
+      <section>
+        <p>10 Day Forecast</p>
+
+        <section className="flex flex-col gap-2">
+          {!weather
+            ? null
+            : weather.forecast?.forecastday.map((forecastDay, index) => {
+                return (
+                  <div key={index} className="grid grid-cols-8">
+                    <span className="text-left col-start-1 col-end-2">
+                      {index !== 0
+                        ? formatInTimeZone(
+                            new Date(`${forecastDay.date} CST`),
+                            weather.location.tz_id,
+                            'EEE'
+                          )
+                        : 'Today'}
+                    </span>
+                    <span className="text-center">
+                      {forecastDay.day.daily_chance_of_rain}%
+                    </span>
+                    <span className="text-right col-start-4 col-end-5 mr-4">
+                      {forecastDay.day.mintemp_f}°F
+                    </span>
+                    <span className="col-start-5 col-end-8">
+                      <ResponsiveBullet
+                        data={[
+                          {
+                            title: 'Temp',
+                            id: '123',
+                            measures: [],
+                            ranges: [
+                              forecastDay.day.mintemp_f,
+                              forecastDay.day.maxtemp_f,
+                            ],
+                            markers: [weather.current.temp_f],
+                          },
+                        ]}
+                        isInteractive={false}
+                        layout="horizontal"
+                        minValue={0}
+                        maxValue={100}
+                      />
+                    </span>
+                    <span className="text-center col-start-8 col-end-9">
+                      {forecastDay.day.maxtemp_f}°F
+                    </span>
+                  </div>
+                );
+              })}
+        </section>
+      </section>
     </main>
   );
 }
 
 const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
   return (
-    <div className="mx-auto w-11/12 grid grid-cols-2 grid-rows-3 bg-pink-600 text-white rounded-xl opacity-75 mb-4 border-4 border-blue-500 border-opacity-40">
-      <h2 className="text-2xl col-span-1 text-center self-center font-bold">
-        {weather.location.name}
+    <div className="mx-auto w-full bg-green-600 text-white opacity-75 mb-4 flex flex-col gap-4 py-4">
+      <h2 className="text-2xl col-span-1 text-center self-center font-bold relative right-[-25px]">
+        <span className="inline-block text-center">
+          {weather.location.name}
+        </span>
+        <Image
+          src={`https:${weather.current.condition.icon}`}
+          className="inline-block"
+          alt="Weather Icon"
+          width="50"
+          height="50"
+        />
       </h2>
-      <Image
-        src={`https:${weather.current.condition.icon}`}
-        className="col-span-1 self-center place-self-end mr-4 w-[75px]"
-        alt="Weather Icon"
-        width="50"
-        height="50"
-      />
+
       <span className="text-6xl col-span-2 text-center self-center">
         {weather.current.temp_f}°F
       </span>

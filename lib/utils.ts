@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { NextApiRequest } from 'next';
 
 const BASE_URL = 'https://api.weatherapi.com/v1';
-const AVAILABLE_QUERIES: { [key: string]: string[] } = {
+const AVAILABLE_ROUTE_QUERIES: { [key: string]: string[] } = {
   current: ['q', 'lang'],
   forecast: ['q', 'days', 'dt', 'unixdt', 'hour', 'alerts', 'aqi', 'lang'],
   future: ['q', 'lang'],
@@ -54,7 +54,7 @@ export const getApiRequest = (
   const routePath = req.url?.split('/')[2].split('?')[0];
   const url = `${BASE_URL}/${routePath}.json?key=${process.env.WEATHER_API}`;
 
-  return { url, AVAILABLE_QUERIES: AVAILABLE_QUERIES[routePath!] };
+  return { url, AVAILABLE_QUERIES: AVAILABLE_ROUTE_QUERIES[routePath!] };
 };
 
 export const GetWeatherData = async (
