@@ -1,9 +1,10 @@
 import WeatherCurrent from '@/types/current';
-import axios from 'axios';
-import Image from 'next/image';
-import { ComponentType, FC, useEffect, useState } from 'react';
-import { formatInTimeZone } from 'date-fns-tz';
 import { BulletRectsItemProps, ResponsiveBullet } from '@nivo/bullet';
+import axios from 'axios';
+import { formatInTimeZone } from 'date-fns-tz';
+import Image from 'next/image';
+import { FC, useEffect, useState } from 'react';
+
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
 
