@@ -1,9 +1,9 @@
 import WeatherCurrent from '@/types/current';
 import axios from 'axios';
 import Image from 'next/image';
-import { FC, useEffect, useState } from 'react';
+import { ComponentType, FC, useEffect, useState } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
-import { Bullet, ResponsiveBullet } from '@nivo/bullet';
+import { BulletRectsItemProps, ResponsiveBullet } from '@nivo/bullet';
 export default function Home() {
   const [weather, setWeather] = useState<WeatherCurrent>();
 
@@ -68,20 +68,30 @@ export default function Home() {
                       <ResponsiveBullet
                         data={[
                           {
-                            title: 'Temp',
+                            title: '',
                             id: '123',
-                            measures: [],
+                            measures: [
+                              forecastDay.day.mintemp_f,
+                              forecastDay.day.maxtemp_f,
+                            ],
                             ranges: [
                               forecastDay.day.mintemp_f,
                               forecastDay.day.maxtemp_f,
                             ],
-                            markers: [weather.current.temp_f],
+                            markers:
+                              index === 0 ? [weather.current.temp_f] : [],
                           },
                         ]}
                         isInteractive={false}
                         layout="horizontal"
-                        minValue={0}
-                        maxValue={100}
+                        minValue={weather.current.temp_f - 25}
+                        maxValue={weather.current.temp_f + 25}
+                        rangeColors={['lightgray']}
+                        markerColors={['white']}
+                        measureColors={['rgba(0,0,0,0)', 'black']}
+                        measureBorderWidth={10}
+                        measureBorderColor={'green'}
+                        measureComponent={CustomMeasure}
                       />
                     </span>
                     <span className="text-center col-start-8 col-end-9">
@@ -119,5 +129,25 @@ const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
         {weather.current.condition.text}
       </p>
     </div>
+  );
+};
+
+const CustomMeasure: FC<BulletRectsItemProps> = ({
+  x,
+  y,
+  width,
+  height,
+  color,
+}) => {
+  return (
+    <rect
+      x={x}
+      y={y}
+      rx={5}
+      width={width}
+      height={height}
+      strokeLinejoin="round"
+      fill={color}
+    ></rect>
   );
 };
