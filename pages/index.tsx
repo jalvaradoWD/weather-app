@@ -1,5 +1,9 @@
 import WeatherCurrent from '@/types/current';
-import { BulletRectsItemProps, ResponsiveBullet } from '@nivo/bullet';
+import {
+  BulletRectsItemProps,
+  ResponsiveBullet,
+  BulletMarkersItemProps,
+} from '@nivo/bullet';
 import axios from 'axios';
 import { formatInTimeZone } from 'date-fns-tz';
 import Image from 'next/image';
@@ -27,7 +31,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-col ">
+    <main className="flex flex-col bg-slate-800 h-screen">
       <h1 className="font-bold flex justify-center gap-2">
         <span>Raindrop</span>
         <Image
@@ -41,16 +45,16 @@ export default function Home() {
 
       {weather ? <WeatherHeader weather={weather} /> : null}
 
-      <section>
-        <p>10 Day Forecast</p>
+      <section className="px-2">
+        <p className="text-center pb-4">10 Day Forecast</p>
 
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-2 font-bold">
           {!weather
             ? null
             : weather.forecast?.forecastday.map((forecastDay, index) => {
                 return (
                   <div key={index} className="grid grid-cols-8">
-                    <span className="text-left col-start-1 col-end-2">
+                    <span className="text-left col-start-1 col-end-2 self-center">
                       {index !== 0
                         ? formatInTimeZone(
                             new Date(`${forecastDay.date} CST`),
@@ -59,10 +63,16 @@ export default function Home() {
                           )
                         : 'Today'}
                     </span>
-                    <span className="text-center">
+                    <span className="flex flex-row items-center">
+                      <Image
+                        src="/weather/64x64/day/308.png"
+                        width="20"
+                        height="20"
+                        alt="Rain"
+                      />
                       {forecastDay.day.daily_chance_of_rain}%
                     </span>
-                    <span className="text-right col-start-4 col-end-5 mr-4">
+                    <span className="text-right col-start-4 col-end-5 mr-4 self-center">
                       {forecastDay.day.mintemp_f}°F
                     </span>
                     <span className="col-start-5 col-end-8">
@@ -75,10 +85,7 @@ export default function Home() {
                               forecastDay.day.mintemp_f,
                               forecastDay.day.maxtemp_f,
                             ],
-                            ranges: [
-                              forecastDay.day.mintemp_f,
-                              forecastDay.day.maxtemp_f,
-                            ],
+                            ranges: [],
                             markers:
                               index === 0 ? [weather.current.temp_f] : [],
                           },
@@ -87,15 +94,17 @@ export default function Home() {
                         layout="horizontal"
                         minValue={weather.current.temp_f - 25}
                         maxValue={weather.current.temp_f + 25}
-                        rangeColors={['lightgray']}
-                        markerColors={['white']}
-                        measureColors={['rgba(0,0,0,0)', 'black']}
+                        rangeColors={['rgba(125,125,125,.8)']}
+                        rangeComponent={CustomRange}
+                        markerColors={'black'}
+                        markerComponent={CustomMarker}
+                        measureColors={['rgba(0,0,0,0)', 'white']}
                         measureBorderWidth={10}
                         measureBorderColor={'green'}
                         measureComponent={CustomMeasure}
                       />
                     </span>
-                    <span className="text-center col-start-8 col-end-9">
+                    <span className="text-center col-start-8 col-end-9 self-center">
                       {forecastDay.day.maxtemp_f}°F
                     </span>
                   </div>
@@ -109,7 +118,7 @@ export default function Home() {
 
 const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
   return (
-    <div className="mx-auto w-full bg-green-600 text-white opacity-75 mb-4 flex flex-col gap-4 py-4">
+    <div className="mx-auto w-full bg-green-600 text-white mb-4 flex flex-col gap-4 py-4">
       <h2 className="text-2xl col-span-1 text-center self-center font-bold relative right-[-25px]">
         <span className="inline-block text-center">
           {weather.location.name}
@@ -150,5 +159,31 @@ const CustomMeasure: FC<BulletRectsItemProps> = ({
       strokeLinejoin="round"
       fill={color}
     ></rect>
+  );
+};
+
+const CustomRange: FC<BulletRectsItemProps> = ({
+  x,
+  y,
+  width,
+  height,
+  color,
+}) => {
+  return (
+    <rect
+      x={x}
+      y={y}
+      rx={7}
+      width={width}
+      height={height}
+      strokeLinejoin="round"
+      fill={color}
+    ></rect>
+  );
+};
+
+const CustomMarker: FC<BulletMarkersItemProps> = ({ x, y, color }) => {
+  return (
+    <rect x={x} y={y + 3} ry={5} strokeLinejoin="round" fill={color}></rect>
   );
 };
