@@ -9,7 +9,7 @@ import { CustomMarker, CustomMeasure, CustomRange } from './nivoComponents';
 
 export const WeatherHeader: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
 	return (
-		<div className="mx-auto w-full bg-green-600 text-white mb-4 flex flex-col gap-4 py-4 rounded-md">
+		<div className="mx-auto w-full bg-green-700 text-white mb-4 flex flex-col gap-4 py-4 rounded-md">
 			<h2 className="text-2xl col-span-1 text-center self-center relative right-[-25px]">
 				<span className="inline-block text-center">
 					{weather.location.name}
@@ -107,7 +107,6 @@ export const WeatherForecast: FC<{ weather: WeatherCurrent }> = ({
 };
 
 export const WeatherHourly: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	const dayInMilli = hoursToMilliseconds(24);
 	const currentTime = weather.location.localtime_epoch;
 	const imageSize = 64;
 	const weather24Hr = [
@@ -182,21 +181,44 @@ export const FeelsLike: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
 };
 
 export const Humidity: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	return <></>;
+	return (
+		<span className="w-36 h-36 bg-gray-500 rounded-md p-2 flex flex-col justify-around">
+			<p className="text-sm">Humidity</p>
+			<p className="text-4xl">{weather.current.humidity}%</p>
+			<p className="text-xs">
+				The dew point is {weather.forecast?.forecastday[0].hour[0].dewpoint_f}°F
+				as of now
+			</p>
+		</span>
+	);
 };
 
 export const SunriseSunset: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	return <></>;
+	return (
+		<span className="w-36 h-36 bg-gray-500 rounded-md p-2 flex flex-col justify-around"></span>
+	);
 };
 
 export const Wind: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	return <></>;
+	return (
+		<span className="w-36 h-36 bg-gray-500 rounded-md p-2 flex flex-col justify-around">
+			<p className="text-sm">Wind</p>
+			<p className="flex flex-col">
+				<span className="text-2xl">{weather.current.wind_mph} mph</span>
+				<span className="text-4xl">{weather.current.wind_dir}</span>
+			</p>
+		</span>
+	);
 };
 
 export const Visibility: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	return <></>;
+	return (
+		<span className="w-36 h-36 bg-gray-500 rounded-md p-2 flex flex-col justify-around"></span>
+	);
 };
 
 export const Pressure: FC<{ weather: WeatherCurrent }> = ({ weather }) => {
-	return <></>;
+	return (
+		<span className="w-36 h-36 bg-gray-500 rounded-md p-2 flex flex-col justify-around"></span>
+	);
 };

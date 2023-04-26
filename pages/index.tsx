@@ -5,10 +5,12 @@ import { useEffect, useState } from 'react';
 
 import {
 	FeelsLike,
+	Humidity,
 	UVIndex,
 	WeatherForecast,
 	WeatherHeader,
 	WeatherHourly,
+	Wind,
 } from '@/components/WeatherComponents';
 
 export default function Home() {
@@ -50,9 +52,11 @@ export default function Home() {
 					<WeatherHeader weather={weather} />
 					<WeatherHourly weather={weather} />
 					<WeatherForecast weather={weather} />
-					<aside className="flex flex-row flex-wrap gap-4 mt-4 justify-between">
+					<aside className="flex flex-row flex-wrap gap-4 mt-4 justify-between text-white">
 						<UVIndex weather={weather} />
 						<FeelsLike weather={weather} />
+						<Humidity weather={weather} />
+						<Wind weather={weather} />
 					</aside>
 				</>
 			) : null}
